@@ -10,9 +10,7 @@ for i in data:
     if i == '0':
         empty_count += 1
 
-#data initialisation, changing numbers from strings to ints.
 rows = []
-
 j = 1
 while j <= 9:
     temp = []
@@ -54,17 +52,87 @@ def check_box(i,j):
             temp.append(rows[x][y])
     return master_set - set(temp)
 
-### MAIN BODY
-
-while empty_count > 0:
+def basic_solver(rows):
+    stump_count = 1
     for i in range(9):
         for j in range(9):
             if rows[i][j] == 0:
                 poss_vals = get_vals(i,j)
                 if len(poss_vals) == 1:
                     rows[i][j] = poss_vals[0]
-                    empty_count -= 1
-                    print(f'steps left: {empty_count}')
+                    stump_count = 0
+    return(rows, stump_count)
 
-for i in rows:
-    print(i)
+def advanced_solver(i,j,rows):
+    if rows[i][j] == 0:
+        poss_vals = get_vals(i,j)
+
+        #row check
+        row_poss = []
+        for x in range(9):
+            if x == j:
+                continue
+            if rows[i][x] == 0:
+                for val in get_vals(i,x):
+                    row_poss.append(val)
+        if len(set(poss_vals) - set(row_poss)) == 1:
+            rows[i][j] = list(set(poss_vals) - set(row_poss))[0]
+            return rows
+
+        #col check
+        col_poss = []
+        for y in range(9):
+            if y == i:
+                continue
+            if rows[y][j] == 0:
+                for val in get_vals(y,j):
+                    col_poss.append(val)
+        if len(set(poss_vals) - set(col_poss)) == 1:
+            rows[i][j] = list(set(poss_vals) - set(col_poss))[0]
+            return rows
+
+        #box check
+        first = [0,1,2]
+        second = [3,4,5]
+        third = [6,7,8]
+        boxes = [first,second,third]
+
+        for l in boxes:
+            if i in l:
+                row = l
+            if j in l:
+                col = l
+
+        box_poss = []
+        for x in row:
+            for y in col:
+                if rows[x][y] == 0:
+                    for val in get_vals(x,y):
+                        box_poss.append(val)
+        if len(set(poss_vals) - set(box_poss)) == 1:
+            rows[i][j] = list(set(poss_vals) - set(box_poss))[0]
+            return rows
+    return rows
+
+
+### MAIN BODY
+while empty_count > 0:
+    rows, stump_count = basic_solver(rows)
+
+    if stump_count > 0:
+        for i in range(9):
+            for j in range(9):
+                rows = advanced_solver(i,j,rows)
+
+    empty_count = 0
+    for i in range(9):
+        for j in range(9):
+            if rows[i][j] == 0:
+                empty_count += 1
+
+for i in range(9):
+    if (i-3)%3 == 0:
+        print("_________________________")
+        print()
+    print('| {:d} {:d} {:d} | {:d} {:d} {:d} | {:d} {:d} {:d} |'.format(*rows[i]))
+print("_________________________")
