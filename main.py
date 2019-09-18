@@ -1,5 +1,6 @@
 import sys
 import tkinter as tk
+import time
 
 def solver(data):
     master_set = {1,2,3,4,5,6,7,8,9}
@@ -118,6 +119,7 @@ def solver(data):
 
     ### MAIN BODY
     while empty_count > 0:
+        seconds = time.time()
         rows, stump_count = basic_solver(rows)
 
         if stump_count > 0:
@@ -131,11 +133,14 @@ def solver(data):
                 if rows[i][j] == 0:
                     empty_count += 1
 
+        if seconds > 5:
+            print('Invalid Sudoku, please try again.')
+            return(rows)
+
     for x in range(9):
         for y in range(9):
             rows[x][y] = str(rows[x][y])
     return(rows)
-
 
 def main():
     class Window(tk.Tk):
@@ -149,13 +154,15 @@ def main():
             self.entries = [[None for col in range(9)] for row in range(9)]
             cornercolor =[0,1,2,6,7,8]
             centercolor = [3,4,5]
+            vcmd = (self.register(self.NumberValidation),
+                 '%P')
 
             for row in range(9):
                 for col in range(9):
                     if (row in cornercolor and col in cornercolor) or (row in centercolor and col in centercolor) :
-                        self.e = tk.Entry(self,font=large_font, width=2, highlightbackground='black', highlightthickness=0,bg='#E8E8E8' , justify='center', validate='key')
+                        self.e = tk.Entry(self,font=large_font, width=2, highlightbackground='black', highlightthickness=0,bg='#E8E8E8' , justify='center', validate='key', validatecommand=vcmd)
                     else:
-                        self.e = tk.Entry(self,font=large_font, width=2, highlightbackground='black', highlightthickness=0, justify='center', validate='key')
+                        self.e = tk.Entry(self,font=large_font, width=2, highlightbackground='black', highlightthickness=0, justify='center', validate='key',validatecommand=vcmd)
                     self.e.grid(row=row, column=col, columnspan=1, rowspan=1, padx=3, pady=3)
                     self.entries[row][col] = self.e
 
@@ -180,13 +187,11 @@ def main():
                     self.entries[x][y].delete(0,1)
                     self.entries[x][y].insert(0,complete[x][y])
 
-        #def NumberValidation(S):
-        #    if S in ['1', '2', '3', '4', '5', '6', '7', '8', '9']:
-        #        return True
-        #    self.bell() # .bell() plays that ding sound telling you there was invalid input
-        #    return False
-#
-        #vcmd = (self.register(NumberValidation), '%S')
+        def NumberValidation(self, S):
+            if (S in ['1', '2', '3', '4', '5', '6', '7', '8', '9'] and len(S) < 2) or S == '':
+                return True
+            self.bell() # .bell() plays that ding sound telling you there was invalid input
+            return False
 
 
     window = Window()
