@@ -133,7 +133,7 @@ def solver(data):
                 if rows[i][j] == 0:
                     empty_count += 1
 
-        if seconds > 5:
+        if seconds > 60:
             print('Invalid Sudoku, please try again.')
             return(rows)
 
