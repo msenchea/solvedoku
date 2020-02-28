@@ -133,9 +133,9 @@ def solver(data):
                 if rows[i][j] == 0:
                     empty_count += 1
 
-        if seconds > 60:
-            print('Invalid Sudoku, please try again.')
-            return(rows)
+        #if seconds > 60:
+        #    print('Invalid Sudoku, please try again.')
+        #    return(rows)
 
     for x in range(9):
         for y in range(9):
